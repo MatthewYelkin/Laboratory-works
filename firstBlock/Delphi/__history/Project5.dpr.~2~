@@ -1,0 +1,33 @@
+Program Lab_1_4;
+
+Uses
+    System.SysUtils;
+Const
+    MIN = 1;
+    MAX = 100;
+Var
+    N, Sum: Integer;
+    IsCorrect: Boolean;
+
+begin
+    N := 0;
+    Sum := 0;
+    Writeln('Вычислить A1+2A2+3A3+...+NAN. Диапазон ввода - от 1 до 100.');
+     Repeat
+         IsCorrect := True;
+         Write('Введите N = ');
+         Try
+             Readln(N);
+         Except
+             Writeln('Ошибка. Введите корректное число');
+             IsCorrect := False;
+         End;
+         If IsCorrect and (N < MIN) or (N > MAX) Then
+         Begin
+             Writeln('Ошибка. Введите число от 1 до 100');
+             IsCorrect := False;
+         End;
+
+     Until (IsCorrect);
+
+end.

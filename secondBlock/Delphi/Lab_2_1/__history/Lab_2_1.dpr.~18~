@@ -1,0 +1,103 @@
+Program Lab_2_1;
+
+uses
+  System.SysUtils;
+
+Const
+    MIN_N = 3;
+    MAX_N = 15;
+    MIN_C = -100;
+    MAX_C = 100;
+Var
+    I, P, N, K, LastNum: Integer;
+    IsCorrect, IsVipukl: Boolean;
+    Coordinates, Vector: Array of Array of Integer;
+
+Begin
+    K := 0;
+    Writeln('Многоугольник задан координатами своих вершин. Определить, является ли данный многоугольник выпуклым.');
+    Repeat
+        IsCorrect := True;
+        Write('Введите количество вершин многоугольника: ');
+        Try
+            Readln(N);
+        Except
+            Writeln('Ошибка. Введите корректное число');
+            IsCorrect := False;
+        End;
+        If IsCorrect and ((N < MIN_N) or (N > MAX_N)) Then
+        Begin
+            Writeln('Ошибка. Введите число от 3 до 15');
+            IsCorrect := False;
+        End;
+    Until (IsCorrect);
+    SetLength(Coordinates, N);
+    LastNum := N - 1;
+    Writeln('Введите координаты вершин в порядке обхода по часовой стрелке:');
+    For I := 0 to LastNum Do  //Ввод координат вершин
+    Begin
+        SetLength(Coordinates[I], 2);
+        Repeat
+            Write('Введите x', (I + 1), ': ');
+            IsCorrect := True;
+        Try
+            Readln(Coordinates[I][0]);
+        Except
+            Writeln('Ошибка. Введите корректное число');
+            IsCorrect := False;
+        End;
+        If IsCorrect and ((Coordinates[I][0] < MIN_C) or (Coordinates[I][0] > MAX_C)) then
+        Begin
+            Writeln('Ошибка. Введите число от -100 до 100');
+            IsCorrect := False;
+        End;
+        Until (IsCorrect);
+
+        Repeat
+            Write('Введите y', (I + 1), ': ');
+            IsCorrect := True;
+        Try
+            Readln(Coordinates[I][1]);
+        Except
+            Writeln('Ошибка. Введите корректное число');
+            IsCorrect := False;
+        End;
+        If IsCorrect and ((Coordinates[I][1] < MIN_C) or (Coordinates[I][1] > MAX_C)) then
+        Begin
+            Writeln('Ошибка. Введите число от -100 до 100');
+            IsCorrect := False;
+        End;
+        Until (IsCorrect);
+    End;
+    SetLength(Vector, N);
+    For I := 0 to LastNum Do
+    Begin
+        SetLength(Vector[I], 2);
+        If I = LastNum Then  //Вычисление последнего вектора
+        Begin
+            Vector[N - 1][0] := Coordinates[0][0] - Coordinates[N - 1][0];
+		       	Vector[N - 1][1] := Coordinates[0][1] - Coordinates[N - 1][1];
+        End
+        Else   //Вычисление первого и до предпоследнего векторов
+        Begin
+            Vector[I][0] := Coordinates[I + 1][0] - Coordinates[I][0];
+		       	Vector[I][1] := Coordinates[I + 1][1] - Coordinates[I][1];
+        End;
+    End;
+    IsVipukl := True;
+	  While (IsVipukl) and (K < LastNum) Do
+    Begin   //Произведение вектор
+		    P := Vector[K][0] * Vector[K + 1][1] - Vector[K][1] * Vector[K + 1][0];
+		    If P > 0 Then
+			      IsVipukl := False
+		    Else
+			      Inc(K);
+    End;
+    If IsVipukl Then
+	    	Writeln('Многоугольник выпуклый')
+    Else
+        Writeln('Многоугольник невыпуклый');
+    Readln;
+    Coordinates := NIL;
+    Vector := NIL;
+End.

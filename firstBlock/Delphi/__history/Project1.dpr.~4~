@@ -1,0 +1,47 @@
+program Project1;
+
+{$APPTYPE CONSOLE}
+
+{$R *.res}
+
+uses
+  System.SysUtils;
+Var
+Number,d: Integer;
+IsCorrect: Boolean;
+begin
+     Writeln('Ââåäèòå äåíü íåäåëè(÷èñëî îò 1 äî 7)');
+     IsCorrect:=True;
+     while IsCorrect do
+     Begin
+      repeat
+        Readln(Number);
+        if (Number>0) and (Number<8) then
+          IsCorrect:=False
+        else
+          Writeln('Ââåäèòå êîğğåêòíîå ÷èñëî');
+        until
+          IsCorrect=True;
+     End;
+      if Number=1 then
+       Writeln('Ïîíåäåëüíèê')
+      else
+          if Number=2 then
+            Writeln('Âòîğíèê')
+          else
+              if Number=3 then
+                Writeln('Ñğåäà')
+              else
+                  if Number=4 then
+                    Writeln('×åòâåğã')
+                  else
+                      if Number=5 then
+                        Writeln('Ïÿòíèöà')
+                      else
+                          if Number=6 then
+                            Writeln('Ñóááîòà')
+                          else
+                              if Number=7 then
+                                Writeln('Âîñêğåñåíüå');
+                                readln (d);
+end.

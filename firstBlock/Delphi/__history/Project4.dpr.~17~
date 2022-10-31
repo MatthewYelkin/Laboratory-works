@@ -1,0 +1,49 @@
+program Lab_1_3;
+
+uses
+  System.SysUtils;
+
+Var
+    M, N, K, Mult: Integer;
+    IsCorrect: Boolean;
+
+Begin
+    Writeln('Даны два натуральных числа m и n (1<m<n). Найти наименьшее k, при котором m^k>n');
+    IsCorrect := True;
+    Repeat
+        Repeat
+            IsCorrect := True;
+            Write('Введите m = ');
+            Try
+                Readln(M);
+            Except
+                Writeln('Ошибка. Введите корректное число');
+                IsCorrect := False;
+            End;
+        Until (IsCorrect);
+        Repeat
+            IsCorrect := True;
+            Write('Введите n = ');
+            Try
+                Readln(N);
+            Except
+                Writeln('Ошибка. Введите корректное число');
+                IsCorrect := False;
+            End;
+        Until (IsCorrect);
+        If (M < 2) or (M > N - 1) Then
+        Begin
+            Writeln('Ошибка. Должно выполняться условие 1<m<n');
+            IsCorrect := False;
+        End;
+    Until (IsCorrect);
+    Mult := 1;
+    K := 0;
+    while Mult < N + 1 do
+    Begin
+        Mult := Mult * M;
+        K := K + 1;
+    End;
+    Writeln('Наименьшее k, при котором m^k>n: ', K);
+    Readln;
+End.

@@ -1,0 +1,43 @@
+Program Lab_2_2;
+
+Type
+    TArr = array[1..100] of Integer;
+
+Function FindNum: TArr;
+Const Factor = 2;
+Var
+    H, M, I: Integer;
+    Num: TArr;
+Begin
+    I := 0;
+    H := 2;
+    M := 0;
+    Repeat
+        H := H * Factor + M;
+        If H < 10 Then
+        Begin
+            M := 0;
+        End
+        Else
+        Begin
+            H := H - 10;
+            M := 1;
+        End;
+        Num[I] := H;
+        Inc(I);
+    Until (I = 100) And ((H = 2) Or (M = 0));
+    Result := Num;
+End;
+
+Procedure PrintArr(Num: TArr);
+Var
+    K: Integer;
+Begin
+    For K := 17 DownTo 0 Do
+        Write (Num[K]);
+End;
+
+Begin
+    PrintArr(FindNum);
+    Readln;
+End.

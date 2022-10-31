@@ -1,0 +1,34 @@
+program Lab_1_1;
+uses
+    System.SysUtils;
+var
+    Number: Integer;
+    IsCorrect: Boolean;
+begin
+     Writeln('Ââåäèòå íîìåğ äíÿ íåäåëè(÷èñëî îò 1 äî 7)');
+     IsCorrect := True;
+     while IsCorrect do
+     begin
+        try
+            Readln(Number);
+            IntToStr(Number);
+        
+        except
+            Writeln('Îøèáêà. Ïğîâåğüòå êîğğåêòíîñòü ââåäåííûõ äàííûõ');
+        end;
+        if (Number > 0) and (Number < 8) then
+            IsCorrect := False
+        else
+            Writeln('Îøèáêà. Ïğîâåğüòå êîğğåêòíîñòü ââåäåííûõ äàííûõ');
+     end;
+     case Number of
+     1: Writeln('Ïîíåäåëüíèê');
+     2: Writeln('Âòîğíèê');
+     3: Writeln('Ñğåäà');
+     4: Writeln('×åòâåğã');
+     5: Writeln('Ïÿòíèöà');
+     6: Writeln('Ñóááîòà');
+     7: Writeln('Âîñêğåñåíüå');
+     end;
+     Readln;
+end.

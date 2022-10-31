@@ -1,0 +1,309 @@
+Program Lab_2_3;
+
+Uses
+  System.SysUtils;
+
+Type
+    TMatrix = Array of Array of Real;
+    TRoots = Array of Real;
+
+Function ReadCountRoots(): Integer;
+Const
+    MIN = 2;
+    MAX = 10;
+Var
+    TmpCountRoots: Integer;
+    IsCorrect: Boolean;
+Begin
+    Repeat
+        IsCorrect := True;
+        Write('Введите количество неизвестных системы уравнений. СountRoots = ');
+        Try
+            Readln(TmpCountRoots);
+        Except
+            IsCorrect := False;
+            Writeln('Ошибка ввода. Количество неизвестных системы уравнений целое число.');
+        End;
+        If (IsCorrect) and ((TmpCountRoots < MIN) or (TmpCountRoots > MAX)) Then
+        Begin
+            IsCorrect := False;
+            Writeln('Ошибка ввода. Количество неизвестных системы уравнений целое число. Диапазон ввода от 2 до 10.');
+        End;
+    Until IsCorrect;
+    ReadCountRoots := TmpCountRoots;
+End;
+
+Function TakeChoice(OutputText: String): Integer;
+Var
+    Choice: Integer;
+    IsCorrect: Boolean;
+Begin
+    Repeat
+        IsCorrect := True;
+        Writeln(OutputText);
+        Try
+            Readln(Choice);
+        Except
+            IsCorrect := False;
+            Writeln('Введены некорректные данные');
+        End;
+        If (IsCorrect) And ((Choice < 0) Or (Choice > 1)) then
+        Begin
+            IsCorrect := False;
+            Writeln('Введите 0 или 1.');
+        End;
+    Until IsCorrect;
+    TakeChoice := Choice;
+End;
+
+Function InputMatrixCell(): Real;
+Const
+    MIN = -5000;
+    MAX = 5000;
+Var
+    IsCorrect: Boolean;
+    TmpValue: Real;
+Begin
+    Repeat
+        IsCorrect := True;
+        Try
+            Readln(TmpValue);
+        Except
+            IsCorrect := False;
+            Writeln('Ошибка ввода. Введены некорректные данные');
+        End;
+        If (IsCorrect) And ((TmpValue < MIN) Or (TmpValue > MAX)) then
+        Begin
+            IsCorrect := False;
+            Writeln('Ошибка! Диапазон ввода от -5000 до 5000.');
+        End;
+    Until IsCorrect;
+    InputMatrixCell := TmpValue;
+End;
+
+Procedure ReadMatrix(TmpCountRoots: Integer; Var TmpMatrix: TMatrix);
+Var
+    I, J: Integer;
+    IsCorrect: Boolean;
+Begin
+    For I := 0 to TmpCountRoots - 1 do
+    Begin
+        For J := 0 to TmpCountRoots do
+        Begin
+            Write('Введите элемент ', I + 1, ' строки и ', J + 1, ' столбца ');
+            TmpMatrix[I][J] := InputMatrixCell();
+        End;
+    End;
+End;
+
+Procedure WriteRoots(TmpCountRoots: Integer; TmpRoots: TRoots);
+Var
+    I: Integer;
+Begin
+    Write('Корни уравнения равны ');
+    For I := 0 to TmpCountRoots - 1 do
+        Write(TmpRoots[I]:5:2, ' ');
+    Writeln;
+End;
+
+Function FileExist(FileName: String): Boolean;
+Var
+    F: Text;
+Begin
+    Assign(F, FileName);
+    Try
+
+        Reset(F);
+    Except
+        FileExist := False;
+    End;
+    if Result then
+        Close(F);
+End;
+
+Function InputFilePach(): String;
+Var
+    IsCorrect: Boolean;
+    FilePach: String;
+Begin
+    Repeat
+        Writeln('Введите путь к файлу и название файла.');
+        IsCorrect := True;
+        Readln(FilePach);
+        If FileExist(FilePach) = False then
+        Begin
+            Writeln('Ошибка ввода имени файла.');
+            IsCorrect := False;
+        End;
+    Until IsCorrect;
+    InputFilePach := FilePach;
+End;
+
+Procedure InputFromFile(Var TmpCountRoots: Integer; Var TmpMatrix: TMatrix);
+Var
+    I, J: Integer;
+    IsCorrect: Boolean;
+    F: Text;
+Begin
+    Assign(F, InputFilePach());
+    Reset(F);
+{$I-}
+    Read(F, TmpCountRoots);
+{$I+}
+    If (IOResult <> 0) or (TmpCountRoots < 2) then
+    Begin
+        IsCorrect := False;
+        Writeln('Ошибка ввода. Введите количество неизвестных больше 1 c клавиатуры.');
+        TmpCountRoots := ReadCountRoots();
+    End;
+    SetLength(TmpMatrix, TmpCountRoots, TmpCountRoots + 1);
+    For I := 0 to TmpCountRoots - 1 do
+    Begin
+        For J := 0 to TmpCountRoots do
+        Begin
+{$I-}
+            Read(F, TmpMatrix[I, J]);
+{$I+}
+            If (IOResult <> 0) then
+            Begin
+                Write('Ошибка чтения коэфициента из файла. Введите коэфициент ',
+                       I + 1, ' строки ', J + 1, ' столбца с клавиатуры : ');
+                TmpMatrix[I, J] := InputMatrixCell();
+            End;
+        End;
+    End;
+    Close(F);
+End;
+
+Procedure WriteMatrixInConsol(TmpCountRoots: Integer; TmpMatrix: TMatrix);
+Var
+    I, J: Integer;
+Begin
+    Writeln('Вы ввели матрицу :');
+    For I := 0 to TmpCountRoots - 1 do
+    Begin
+        For J := 0 to TmpCountRoots do
+            Write(TmpMatrix[I, J]:5:2, ' ');
+        Writeln;
+    End;
+End;
+
+Procedure MoveStrings(Var TmpMatrix: TMatrix; FirstRow, SecondRow: Integer;
+                      TmpCountRoots: Integer);
+Var
+    J: Integer;
+    R: Real;
+Begin
+    If (FirstRow < TmpCountRoots + 1) and (SecondRow < TmpCountRoots + 1) then
+    Begin
+        For J := 0 to TmpCountRoots do
+        Begin
+            R := TmpMatrix[SecondRow, J];
+            TmpMatrix[SecondRow, J] := TmpMatrix[FirstRow, J];
+            TmpMatrix[FirstRow, J] := R;
+        End;
+    End
+End;
+
+Procedure NewMatrix(TmpCountRoots: Integer; TmpMatrix: TMatrix);
+Var
+    I, J, M, TmpI: Integer;
+    K: Real;
+Begin
+    For J := 0 to TmpCountRoots - 1 do
+    Begin
+        If TmpMatrix[J, J] = 0 then
+        Begin
+            TmpI := J + 1;
+            Repeat
+                If TmpMatrix[TmpI, J] <> 0 then
+                    MoveStrings(TmpMatrix, J, TmpI, TmpCountRoots);
+            Until ((TmpI < TmpCountRoots + 1) or (TmpMatrix[J, J] <> 0));
+        End;
+        For I := J + 1 to TmpCountRoots - 1 do
+        Begin
+            K := TmpMatrix[I, J] / TmpMatrix[J, J];
+            For M := J to TmpCountRoots do
+                TmpMatrix[I, M] := TmpMatrix[I, M] - K * TmpMatrix[J, M];
+        End;
+    End;
+End;
+
+Procedure FindRoots(TmpCountRoots: Integer; TmpMatrix: TMatrix;
+  Var TmpRoots: TRoots);
+Var
+    I, J: Integer;
+    Sum: Real;
+Begin
+    SetLength(TmpRoots, TmpCountRoots);
+    For I := TmpCountRoots - 1 downto 0 do
+    Begin
+        Sum := 0;
+        For J := I + 1 to TmpCountRoots - 1 do
+            Sum := Sum + TmpRoots[J] * TmpMatrix[I, J];
+        If TmpMatrix[I, I] = 0 then
+            TmpRoots[I] := 0
+        Else
+            TmpRoots[I] := (TmpMatrix[I, TmpCountRoots] - Sum) /
+              TmpMatrix[I, I];
+    End;
+End;
+
+Procedure TheGaussM(TmpCountRoots: Integer; TmpMatrix: TMatrix;
+  Var TmpRoots: TRoots);
+Begin
+    WriteMatrixInConsol(TmpCountRoots, TmpMatrix);
+    NewMatrix(TmpCountRoots, TmpMatrix);
+    FindRoots(TmpCountRoots, TmpMatrix, TmpRoots);
+End;
+
+Procedure OutputInFile(TmpCountRoots: Integer; TmpRoots: TRoots);
+Var
+    I: Integer;
+    F: Text;
+    SaveFile: String;
+    IsCorrect: Boolean;
+Begin
+    If TakeChoice('Вы хотите сохранить результат программы в файл?(0 - Да/ 1 - Нет).') = 0 Then
+    Begin
+        SaveFile := InputFilePach();
+        Assign(F, SaveFile);
+        Rewrite(F);
+        Write(F, 'Корни уравнения равны ');
+        For I := 0 to TmpCountRoots - 1 do
+        Begin
+            Write(F, TmpRoots[I]:5:2, ' ');
+        End;
+        Close(F);
+        Writeln('Корни сохранены в файл : ', SaveFile);
+        Readln;
+    End;
+End;
+
+Procedure ConsolInput(Var TmpCountRoots: Integer; Var TmpMatrix: TMatrix);
+Begin
+    TmpCountRoots := ReadCountRoots();
+    SetLength(TmpMatrix, TmpCountRoots, TmpCountRoots + 1);
+    ReadMatrix(TmpCountRoots, TmpMatrix);
+End;
+
+Procedure Input(Var TmpCountRoots: Integer; Var TmpMatrix: TMatrix);
+begin
+    If TakeChoice('Нажмите 0, если хотите работать в консоли, 1 , если в файле.') = 0 then
+        ConsolInput(TmpCountRoots, TmpMatrix)
+    Else
+        InputFromFile(TmpCountRoots, TmpMatrix);
+end;
+
+Var
+    Matrix: TMatrix;
+    Roots: TRoots;
+    CountRoots: Integer;
+Begin
+    Writeln('Данная программа выполняет "прямой ход" в решении системы алгебраических уравнений методом Гаусса.');
+    Writeln('Примечание : этот метод применим только для матриц, определитель которой отличен от нуля.Поэтому перед вводом данных убедитесь, что определитель отличен от нуля.');
+    Input(CountRoots, Matrix);
+    TheGaussM(CountRoots, Matrix, Roots);
+    WriteRoots(CountRoots, Roots);
+    OutputInFile(CountRoots, Roots);
+End.
